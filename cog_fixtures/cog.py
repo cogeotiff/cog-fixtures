@@ -1,36 +1,45 @@
+"""cog_fixtures.cog module"""
 import abc
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Dict, Optional, Sequence, Union
 
 import affine
 import rasterio
-from rasterio.transform import from_origin
-from pathlib import Path
+from fake_geo_images.fakegeoimages import FakeGeoImage
 from rasterio.crs import CRS
 from rasterio.io import MemoryFile
+from rasterio.transform import from_origin
 from rio_cogeo.cogeo import cog_translate
 
-from fake_geo_images.fakegeoimages import FakeGeoImage
 
-@dataclass
+@dataclass  # type: ignore
 class ImageBase(abc.ABC):
+    """base image class"""
+
     def __enter__(self):
+        """support context management"""
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
+        """support context management"""
         self.close()
 
     @abc.abstractmethod
     def __post_init__(self):
+        """post init hook"""
         ...
 
     @abc.abstractmethod
     def close(self):
+        """close resources"""
         ...
 
 
 @dataclass
 class FakeImage(ImageBase):
+    """fake rasterio image"""
+
     driver: str
     width: int
     height: int
@@ -41,23 +50,27 @@ class FakeImage(ImageBase):
     transform: Optional[affine.Affine] = from_origin(1470996, 6914001, 2.0, 2.0)
 
     def __post_init__(self):
+        """post init hook"""
         fpath, _ = FakeGeoImage(
             xsize=self.width,
             ysize=self.height,
             num_bands=self.count,
             data_type=self.dtype,
-            out_dir=Path(f"/vsimem"),
+            out_dir=Path("/vsimem"),
             crs=self.crs.to_epsg(),
-            nodata=self.nodata
+            nodata=self.nodata,
         ).create(transform=self.transform)
         self.handle = rasterio.open(fpath)
 
     def close(self):
+        """close resources"""
         self.handle.close()
 
 
 @dataclass
 class FakeCog(ImageBase):
+    """fake cloud optimized geotiff"""
+
     src_img: FakeImage
     dst_kwargs: Dict
     indexes: Optional[Sequence[int]] = None
@@ -76,6 +89,7 @@ class FakeCog(ImageBase):
     temporary_compression: str = "DEFLATE"
 
     def __post_init__(self):
+        """post init hook"""
         self.memfile = MemoryFile()
         cog_translate(
             source=self.src_img.handle,
@@ -100,5 +114,6 @@ class FakeCog(ImageBase):
         self.handle = self.memfile.open()
 
     def close(self):
+        """close resources"""
         self.handle.close()
         self.memfile.close()
