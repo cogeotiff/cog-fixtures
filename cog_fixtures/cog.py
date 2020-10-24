@@ -6,6 +6,7 @@ import affine
 import rasterio
 from rasterio.transform import from_origin
 from pathlib import Path
+from rasterio.crs import CRS
 from rasterio.io import MemoryFile
 from rio_cogeo.cogeo import cog_translate
 
@@ -28,7 +29,6 @@ class ImageBase(abc.ABC):
         ...
 
 
-
 @dataclass
 class FakeImage(ImageBase):
     driver: str
@@ -36,7 +36,7 @@ class FakeImage(ImageBase):
     height: int
     count: int
     dtype: str
-    epsg: int # TODO: Pass CRS object
+    crs: CRS
     nodata: float = 0.0
     transform: Optional[affine.Affine] = from_origin(1470996, 6914001, 2.0, 2.0)
 
@@ -47,7 +47,7 @@ class FakeImage(ImageBase):
             num_bands=self.count,
             data_type=self.dtype,
             out_dir=Path(f"/vsimem"),
-            crs=self.epsg,
+            crs=self.crs.to_epsg(),
             nodata=self.nodata
         ).create(transform=self.transform)
         self.handle = rasterio.open(fpath)
