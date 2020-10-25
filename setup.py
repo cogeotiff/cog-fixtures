@@ -1,4 +1,4 @@
-"""Setup for rio-tiler."""
+"""Setup for cog-fixtures."""
 
 from setuptools import find_packages, setup
 
