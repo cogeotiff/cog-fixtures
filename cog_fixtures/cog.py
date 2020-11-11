@@ -9,7 +9,6 @@ import rasterio
 from fake_geo_images.fakegeoimages import FakeGeoImage
 from rasterio.crs import CRS
 from rasterio.io import MemoryFile
-from rasterio.transform import from_origin
 from rio_cogeo.cogeo import cog_translate
 
 
@@ -46,8 +45,8 @@ class FakeImage(ImageBase):
     count: int
     dtype: str
     crs: CRS
-    nodata: float = 0.0
-    transform: Optional[affine.Affine] = from_origin(1470996, 6914001, 2.0, 2.0)
+    transform: affine.Affine
+    nodata: Union[float, int] = -1.0
 
     def __post_init__(self):
         """post init hook"""
@@ -104,7 +103,7 @@ class FakeCog(ImageBase):
             web_optimized=self.web_optimized,
             latitude_adjustment=self.latitude_adjustment,
             resampling=self.resampling,
-            in_memory=True,  # TODO: This could be saved to disk
+            in_memory=True,
             config=self.config,
             allow_intermediate_compression=self.allow_intermediate_compression,
             forward_band_tags=self.forward_band_tags,
