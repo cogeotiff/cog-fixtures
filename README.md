@@ -2,7 +2,7 @@
 Suite of valid and invalid Cloud Optimized GeoTIFF for testing purposes
 
 ## Usage
-The library can be used to create "fake" COGs for testing purposes.  Images are created in memory using GDAL's [vsimem filesystem](https://gdal.org/user/virtual_file_systems.html).
+The library can be used to create "fake" COGs for testing purposes.  Images are created in memory using GDAL's [`vsimem` filesystem](https://gdal.org/user/virtual_file_systems.html).
 
 ```python
 from rio_cogeo.profiles import JPEGProfile
