@@ -46,7 +46,7 @@ class FakeImage(ImageBase):
     dtype: str
     crs: CRS
     transform: affine.Affine
-    nodata: Union[float, int] = -1.0
+    nodata: Union[float, int] = None
 
     def __post_init__(self):
         """post init hook"""
@@ -57,7 +57,7 @@ class FakeImage(ImageBase):
             data_type=self.dtype,
             out_dir=Path("/vsimem"),
             crs=self.crs.to_epsg(),
-            nodata=self.nodata,
+            nodata=self.nodata or -1,
         ).create(transform=self.transform)
         self.handle = rasterio.open(fpath)
 
@@ -73,7 +73,7 @@ class FakeCog(ImageBase):
     src_img: FakeImage
     dst_kwargs: Dict
     indexes: Optional[Sequence[int]] = None
-    nodata: Optional[Union[str, int, float]] = None
+    nodata: Optional[Union[int, float]] = None
     dtype: Optional[str] = None
     add_mask: bool = False
     overview_level: Optional[int] = None
