@@ -10,6 +10,7 @@ inst_reqs = [
     "rasterio>=1.1.7",
     "rio-cogeo==2.*",
     "fake-geo-images==0.1.0",
+    'dataclasses;python_version<"3.7"',
 ]
 
 extra_reqs = {
