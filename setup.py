@@ -11,10 +11,11 @@ inst_reqs = [
     "rio-cogeo==2.*",
     "fake-geo-images==0.1.0",
     'dataclasses;python_version<"3.7"',
+    "boto3",
 ]
 
 extra_reqs = {
-    "test": ["pytest", "pytest-cov"],
+    "test": ["pytest", "pytest-cov", "moto"],
     "dev": ["pytest", "pytest-cov", "pre-commit"],
 }
 
