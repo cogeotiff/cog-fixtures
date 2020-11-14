@@ -13,6 +13,14 @@ from cog_fixtures.cog import ImageBase
 class Filesystem(abc.ABC):
     """base filesystem"""
 
+    @classmethod
+    def from_path(cls, path) -> "Filesystem":
+        """return a filesystem based on the path"""
+        if path.startswith("s3://"):
+            return S3Filesystem()
+        else:
+            return LocalFilesystem()
+
     @abc.abstractmethod
     def save(self, img: ImageBase, path: str):
         """save an image to a location"""
